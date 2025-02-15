@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styling for the logo */
+        .logo {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            width: 150px; /* Adjust the width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        /* Center the content */
+        body {
+            margin: 0;
+            height: 100vh; /* Full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: ##00bfff; /* Optional: Add a background color */
+        }
+
+        .container {
+            max-width: 600px; /* Adjust as needed */
+            padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px; /* Optional: Add rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow */
+        }
+
+        .button-group {
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .signup-btn {
+            background-color: #4CAF50; /* Green background for signup button */
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Logo at the top left -->
+    <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
+
+    <!-- Centered content -->
+    <div class="container">
+        <h1>Welcome To Digital Solutions & BIM Excellence Landpage</h1>
+        <p>Start Your Journey</p>
+        <div class="button-group">
+            <button onclick="location.href='login.html'">Log In</button>
+            <button class="signup-btn" onclick="location.href='signup.html'">Create Account</button>
+        </div>
+    </div>
+    
+    <script src="firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if user is logged in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                window.location.href = 'home.html';
+            }
+        });
+    </script>
+</body>
+</html>

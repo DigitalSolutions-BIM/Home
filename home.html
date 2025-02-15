@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <!-- Firebase Dependencies -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
+    <!-- Font Awesome for WhatsApp Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #e1e1e1;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            background-color: #2d2d2d;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #404040;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            height: auto;
+            width: 80px;
+            margin-right: 20px;
+        }
+
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .welcome-text {
+            font-size: 2rem;
+            color: #ffffff;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            color: #4da6ff;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: auto;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .fullscreen-container {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 100px);
+        }
+
+        .section-container {
+            flex: 1;
+            padding: 0 2rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: #4da6ff;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .progress-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Ensure 3 cards per row */
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media screen and (max-width: 768px) {
+            .progress-cards {
+                grid-template-columns: repeat(2, 1fr); /* 2 cards per row on smaller screens */
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .progress-cards {
+                grid-template-columns: 1fr; /* 1 card per row on very small screens */
+            }
+        }
+
+        .progress-card {
+            background: #363636;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #4da6ff;
+            transition: background-color 0.3s ease;
+        }
+
+        .progress-card:hover {
+            background: #404040;
+        }
+
+        .progress-card h3 {
+            color: #4da6ff;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .progress-card p {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #metrics-summary {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #363636;
+            border-radius: 6px;
+            color: #ffffff;
+        }
+
+        #metrics-summary p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #2d2d2d;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4da6ff;
+            transition: width 0.3s ease;
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.4; }
+            100% { opacity: 0.7; }
+        }
+
+        .error-text {
+            color: #dc3545;
+            font-style: italic;
+        }
+
+        .update-btn {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #4da6ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .update-btn:hover {
+            background-color: #3d8bdb;
+        }
+
+        .update-form {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .update-form input {
+            flex: 1;
+            padding: 5px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .update-history {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+
+        .update-entry {
+            background: #2d2d2d;
+            padding: 5px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .section-container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .logout-btn {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .progress-card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* WhatsApp Icon Styles */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25d366;
+            color: #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .whatsapp-float i {
+            font-size: 30px;
+        }
+
+        .whatsapp-float .contact-text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: spin 6s linear infinite;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .whatsapp-float .contact-text span {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform-origin: 0 30px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .whatsapp-float:hover {
+            background-color: #128c7e;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-container">
+        <header class="header">
+            <img src="https://i.ibb.co/n8nJd0Xf/Green-Modern-Ramadan-Mubarak-Free-Instagram-Post-1.png" alt="Logo" class="logo">
+            <div class="welcome-container">
+                <h1 class="welcome-text">Welcome</h1>
+                <span class="user-name" id="user-name">Loading...</span>
+            </div>
+            <button id="logout-btn" class="logout-btn">Sign Out</button>
+        </header>
+
+        <div class="section-container">
+            <section class="section">
+                <h2 class="section-title">Progress</h2>
+                <div id="progress-cards" class="progress-cards">
+                    <!-- Progress cards will be dynamically inserted here -->
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Overall Progress</h2>
+                <div id="metrics-summary">
+                    <p>Calculating overall progress...</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="overall-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- WhatsApp Icon -->
+    <a href="https://wa.me/201155535425" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        <div class="contact-text">
+            <span>C</span>
+            <span>o</span>
+            <span>n</span>
+            <span>t</span>
+            <span>a</span>
+            <span>c</span>
+            <span>t</span>
+            <span> </span>
+            <span>U</span>
+            <span>s</span>
+        </div>
+    </a>
+
+    <script>
+        // Helper function to parse percentage values
+        function parsePercentageValue(value) {
+            if (typeof value === 'string') {
+                return parseFloat(value.replace('%', ''));
+            }
+            return parseFloat(value) || 0;
+        }
+
+        // Create progress card element with update functionality
+        function createProgressCard(taskName, value) {
+            const card = document.createElement('div');
+            card.className = 'progress-card';
+            const cardId = taskName.toLowerCase().replace(/\s+/g, '-');
+            const percentageValue = parsePercentageValue(value);
+
+            card.innerHTML = `
+                <h3>${taskName}</h3>
+                <p id="${cardId}">${value}</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="${cardId}-bar" style="width: ${percentageValue}%"></div>
+                </div>
+                <button class="update-btn">Update</button>
+                <div class="update-history"></div>
+            `;
+
+            return card;
+        }
+
+        // Update progress bar
+        function updateProgressBar(id, value) {
+            const bar = document.getElementById(id);
+            const percentage = parsePercentageValue(value);
+            if (!isNaN(percentage)) {
+                bar.style.width = `${percentage}%`;
+            }
+        }
+
+        // Calculate overall progress
+        function calculateOverallProgress(progressData) {
+            const values = Object.values(progressData)
+                .map(value => parsePercentageValue(value))
+                .filter(value => !isNaN(value));
+
+            if (values.length === 0) return 0;
+            return values.reduce((a, b) => a + b, 0) / values.length;
+        }
+
+        // Set loading state for progress cards container
+        function setLoadingState(isLoading) {
+            const container = document.getElementById('progress-cards');
+            if (isLoading) {
+                container.innerHTML = `
+                    <div class="progress-card loading">
+                        <h3>Loading...</h3>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        // Add event delegation for update buttons
+        document.getElementById('progress-cards').addEventListener('click', function(e) {
+            const updateBtn = e.target.closest('.update-btn');
+            if (updateBtn) {
+                const card = updateBtn.closest('.progress-card');
+                showUpdateForm(card);
+            }
+        });
+
+        function showUpdateForm(card) {
+            const updateBtn = card.querySelector('.update-btn');
+            const updateHistory = card.querySelector('.update-history');
+            
+            const formHtml = `
+                <div class="update-form">
+                    <input type="text" placeholder="Enter new value" required>
+                    <button class="save-btn" type="button">Save</button>
+                    <button class="cancel-btn" type="button">Cancel</button>
+                </div>
+            `;
+            
+            updateBtn.insertAdjacentHTML('afterend', formHtml);
+            updateBtn.style.display = 'none';
+            
+            const form = card.querySelector('.update-form');
+            const input = form.querySelector('input');
+            const saveBtn = form.querySelector('.save-btn');
+            const cancelBtn = form.querySelector('.cancel-btn');
+            
+            saveBtn.addEventListener('click', async () => {
+                if (!input.value.trim()) return;
+                await saveUpdate(card, input.value.trim());
+                form.remove();
+                updateBtn.style.display = 'block';
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                form.remove();
+                updateBtn.style.display = 'block';
+            });
+        }
+
+        async function saveUpdate(card, newValue) {
+            const user = firebase.auth().currentUser;
+            if (!user) return;
+
+            const db = firebase.firestore();
+            const docRef = db.collection('progress').doc(user.email.toUpperCase());
+            const taskName = card.querySelector('h3').textContent;
+            const fieldName = `${taskName}_Update`;
+
+            try {
+                await docRef.update({
+                    [fieldName]: newValue
+                });
+                
+                // Add update to history
+                const updateEntry = document.createElement('div');
+                updateEntry.className = 'update-entry';
+                updateEntry.textContent = `Pending approval: ${newValue}`;
+                card.querySelector('.update-history').prepend(updateEntry);
+            } catch (error) {
+                console.error("Update error:", error);
+                alert('Error saving update. Please try again.');
+            }
+        }
+
+        // Check authentication state and update progress
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                const db = firebase.firestore();
+                const upperCaseEmail = user.email.toUpperCase();
+
+                setLoadingState(true);
+
+                // Fetch user data
+                db.collection('users').doc(upperCaseEmail).get()
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const firstName = doc.data().firstName || doc.data().firstname || doc.data().FIRSTNAME;
+                            const lastName = doc.data().lastName || doc.data().lastname || doc.data().LASTNAME;
+
+                            if (firstName && lastName) {
+                                const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+                                const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
+                                document.getElementById('user-name').textContent = `${formattedFirstName} ${formattedLastName}`;
+                            } else {
+                                document.getElementById('user-name').textContent = 'Please update your profile';
+                            }
+                        } else {
+                            document.getElementById('user-name').textContent = 'Please update your profile';
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching user data:", error);
+                        document.getElementById('user-name').textContent = 'Error loading profile';
+                    });
+
+                // Fetch progress data
+                db.collection('progress').doc(upperCaseEmail).get()
+                    .then((doc) => {
+                        setLoadingState(false);
+                        const progressCardsContainer = document.getElementById('progress-cards');
+
+                        if (doc.exists) {
+                            const progressData = doc.data();
+                            const mainTasks = Object.keys(progressData)
+                                .filter(key => !key.endsWith('_Update'));
+
+                            mainTasks.forEach(taskName => {
+                                const value = progressData[taskName];
+                                const card = createProgressCard(taskName, value);
+                                progressCardsContainer.appendChild(card);
+
+                                // Add existing updates
+                                const updateField = `${taskName}_Update`;
+                                if (progressData[updateField]) {
+                                    const updateEntry = document.createElement('div');
+                                    updateEntry.className = 'update-entry';
+                                    updateEntry.textContent = `Pending approval: ${progressData[updateField]}`;
+                                    card.querySelector('.update-history').appendChild(updateEntry);
+                                }
+                            });
+
+                            // Calculate overall progress
+                            const overallProgress = calculateOverallProgress(progressData);
+                            document.getElementById('metrics-summary').innerHTML = `
+                                <p>Overall Progress: ${overallProgress.toFixed(1)}%</p>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="overall-progress-bar" style="width: ${overallProgress}%"></div>
+                                </div>
+                            `;
+                        } else {
+                            progressCardsContainer.innerHTML = `
+                                <div class="progress-card">
+                                    <h3>No Tasks Found</h3>
+                                    <p class="error-text">Waiting for data from your administrator</p>
+                                </div>
+                            `;
+                            document.getElementById('metrics-summary').innerHTML = 
+                                `<p class="error-text">Waiting for data from your administrator</p>`;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching progress data:", error);
+                        setLoadingState(false);
+                        document.getElementById('progress-cards').innerHTML = `
+                            <div class="progress-card">
+                                <h3>Error</h3>
+                                <p class="error-text">Error loading task data</p>
+                            </div>
+                        `;
+                        document.getElementById('metrics-summary').innerHTML = 
+                            `<p class="error-text">Error calculating overall progress</p>`;
+                    });
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Handle sign out
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            firebase.auth().signOut()
+                .then(() => window.location.href = 'index.html')
+                .catch((error) => {
+                    console.error("Error signing out:", error);
+                    alert('Error signing out. Please try again.');
+                });
+        });
+    </script>
+</body>
+</html>
